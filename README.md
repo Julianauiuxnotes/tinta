@@ -4,7 +4,7 @@ Tailwind CSS palette generator + WCAG contrast lab. One hex in, a 12-stop scale 
 with perceptual OKLab spacing, live WCAG 2.1 contrast checking, real design previews,
 and exports to Tailwind v4 `@theme`, v3 config, JSON, and SVG.
 
-**Single static file - no build, no dependencies.** Open `index.html` in a browser, or host it anywhere.
+**Single static file - no build, no dependencies.** 
 
 ## Deploy
 
