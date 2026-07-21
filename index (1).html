@@ -8,13 +8,12 @@
 <meta name="author" content="Tinta" />
 <meta name="theme-color" content="#E11D48" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23E11D48'/%3E%3Crect x='10' y='14' width='44' height='10' rx='4' fill='%23FFE4E6'/%3E%3Crect x='10' y='28' width='44' height='10' rx='4' fill='%23FB7185'/%3E%3Crect x='10' y='42' width='44' height='10' rx='4' fill='%23881337'/%3E%3C/svg%3E" />
-<!-- Open Graph / social sharing. After deploying, replace the URL values with your live address
-     and (optionally) add an og:image pointing to a 1200x630 screenshot you upload to the repo. -->
+<!-- Open Graph / social sharing -->
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Tinta" />
 <meta property="og:title" content="TINTA — Tailwind palette generator + WCAG contrast lab" />
 <meta property="og:description" content="One hex in, a full 12-stop Tailwind scale out — with live WCAG contrast checking, real design previews, and one-click exports." />
-<meta property="og:url" content="https://YOUR-USERNAME.github.io/tinta/" />
+<meta property="og:url" content="https://julianauiuxnotes.github.io/tinta/" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="TINTA — Tailwind palette generator + WCAG contrast lab" />
 <meta name="twitter:description" content="One hex in, a full 12-stop Tailwind scale out — with live WCAG contrast checking and real design previews." />
@@ -107,7 +106,11 @@
   /* ---------- swatches ---------- */
   .strip-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; flex-wrap: wrap; gap: 4px; }
   #swatches { display: flex; flex-direction: column; gap: 20px; }
-  .pal-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 5px; }
+  .pal-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 5px; }
+  .sw { min-width: 0; }
+  @media (max-width: 700px) {
+    .pal-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); row-gap: 12px; }
+  }
   .pal-head { display: flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 700;
     color: #8b8e88; margin-bottom: 8px; text-align: left; }
   .pal-head:hover { color: var(--ink); }
@@ -252,6 +255,30 @@
     color: #8b8e88; display: flex; align-items: center; gap: 8px; }
   .ui-cast select { width: auto; padding: 6px 10px; font-size: 12.5px; }
 
+  /* ---------- color assistant ---------- */
+  .ai-head { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 14px; }
+  .ai-spark { width: 34px; height: 34px; border-radius: 10px; background: var(--accent);
+    color: var(--accent-contrast, #fff); display: flex; align-items: center; justify-content: center;
+    font-size: 17px; flex-shrink: 0; }
+  .ai-inputrow { display: flex; gap: 8px; }
+  .ai-inputrow input { flex: 1; }
+  .ai-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .ai-chip { border: 1px solid #d4d6d1; background: #fff; border-radius: 99px; padding: 5px 11px;
+    font-size: 11.5px; color: #5a5d57; }
+  .ai-chip:hover { border-color: var(--accent); color: var(--ink); }
+  #ai-results { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .ai-intro { font-size: 12.5px; color: #5a5d57; line-height: 1.55; }
+  .ai-rec { border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+  .ai-rec-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .ai-rec-head b { font-size: 13.5px; }
+  .ai-rec-head .mono { font-size: 11px; color: #8b8e88; }
+  .ai-dot { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(0,0,0,.12); }
+  .ai-use { margin-left: auto; border: 1.5px solid var(--accent); color: var(--accent);
+    border-radius: 8px; padding: 3px 10px; font-size: 11.5px; font-weight: 700; background: #fff; }
+  .ai-use:hover { background: var(--accent); color: var(--accent-contrast, #fff); }
+  .ai-strip { display: flex; gap: 2px; margin-bottom: 8px; }
+  .ai-strip div { flex: 1; height: 18px; border-radius: 4px; border: 1px solid rgba(0,0,0,.05); }
+  .ai-why { font-size: 11.5px; color: #6c6f69; line-height: 1.55; }
   footer { text-align: center; font-size: 12px; color: #b3b5b0; }
 
   .fadeup { animation: fadeup .5s ease both; }
@@ -277,6 +304,29 @@
   <div class="grid-main">
     <!-- ================= left column ================= -->
     <div style="display:flex; flex-direction:column; gap:30px; min-width:0;">
+    <!-- ================= color assistant ================= -->
+    <section class="card fadeup">
+      <div class="ai-head">
+        <span class="ai-spark">✦</span>
+        <div>
+          <h2 class="h2 display" style="font-size:17px">Color assistant</h2>
+          <p class="muted" style="margin-top:2px; line-height:1.5">Not sure where to start? Describe the color and the feeling you want to create — I’ll suggest base hexes with ready-made ramps.</p>
+        </div>
+      </div>
+      <div class="ai-inputrow">
+        <input type="text" id="ai-q" placeholder="e.g. a grey with a good range for any UI" />
+        <button class="btn-accent" id="ai-ask" style="padding:8px 14px; font-size:13px">Suggest</button>
+      </div>
+      <div class="ai-chips">
+        <button class="ai-chip">grey · good range</button>
+        <button class="ai-chip">trustworthy fintech blue</button>
+        <button class="ai-chip">calm wellness app</button>
+        <button class="ai-chip">warm & playful for kids</button>
+        <button class="ai-chip">luxury fashion</button>
+      </div>
+      <div id="ai-results"></div>
+    </section>
+
     <section class="card controls fadeup">
       <div>
         <label class="lbl" for="in-name">Name</label>
@@ -1332,21 +1382,153 @@ els.copy.addEventListener('click', ()=>{
   });
 });
 
+/* ============================ color assistant ============================ */
+/* Layer 1 — curated families: pre-verified bases with designer notes. */
+const FAMILIES = [
+ {n:'Slate', h:'#64748B', kw:['slate','grey','gray','greyish','neutral'], mood:['professional','calm','modern','minimal'], ind:['saas','dashboard','tech','fintech'], note:'Cool, blue-tinted grey \u2014 the most versatile interface neutral; every stop stays distinct and it pairs with any accent.'},
+ {n:'Zinc', h:'#71717A', kw:['zinc','grey','gray','neutral'], mood:['minimal','modern','serious'], ind:['tech','portfolio','dashboard'], note:'Nearly pure grey with a whisper of blue \u2014 quieter than slate, ideal when the accent color should do all the talking.'},
+ {n:'Stone', h:'#78716C', kw:['stone','grey','gray','warm grey','taupe','beige'], mood:['warm','organic','calm','natural','cozy'], ind:['wellness','interior','food','craft'], note:'Warm grey with brown undertones \u2014 friendlier than cool greys; lovely for editorial and lifestyle surfaces.'},
+ {n:'Red', h:'#DC2626', kw:['red','crimson'], mood:['bold','energetic','urgent','passionate'], ind:['food','sports','sale'], note:'Assertive and appetite-driving; keep large fills to the light stops and let 600 carry the action.'},
+ {n:'Terracotta', h:'#C2572B', kw:['terracotta','clay','rust','brick'], mood:['warm','organic','earthy','handmade'], ind:['craft','interior','food','travel'], note:'Earthy warmth without red\u2019s alarm \u2014 a designer favorite for organic, artisanal brands.'},
+ {n:'Orange', h:'#EA580C', kw:['orange'], mood:['playful','energetic','friendly','bold'], ind:['kids','sports','food','startup'], note:'High energy and friendly \u2014 test button text carefully; oranges often need dark labels (your checker will show it).'},
+ {n:'Amber', h:'#D97706', kw:['amber','gold','golden','honey','mustard'], mood:['warm','optimistic','premium','playful'], ind:['food','finance','kids'], note:'Golden warmth that reads premium at the dark stops and sunny at the light ones.'},
+ {n:'Yellow', h:'#CA8A04', kw:['yellow','sun','sunny'], mood:['optimistic','playful','energetic'], ind:['kids','food'], note:'Chosen darker than pure yellow on purpose \u2014 sunny hues have notorious contrast problems; this base keeps buttons legible.'},
+ {n:'Olive', h:'#65740B', kw:['olive','khaki','moss'], mood:['organic','natural','calm','earthy'], ind:['outdoor','food','wellness'], note:'Muted green-yellow with military calm \u2014 unusual enough to stand out, quiet enough for full UIs.'},
+ {n:'Green', h:'#16A34A', kw:['green'], mood:['fresh','natural','positive','healthy'], ind:['health','finance','eco','food'], note:'The universal \u201Cgood news\u201D hue \u2014 doubles as success color; darks stay rich rather than muddy.'},
+ {n:'Emerald', h:'#059669', kw:['emerald','jade'], mood:['fresh','premium','trustworthy','natural'], ind:['health','finance','eco'], note:'Green with a jewel finish \u2014 more premium than plain green, still friendly.'},
+ {n:'Teal', h:'#0D9488', kw:['teal','turquoise'], mood:['calm','fresh','modern','balanced'], ind:['health','wellness','saas','meditation'], note:'Sits between green\u2019s health and blue\u2019s trust \u2014 the classic wellness-tech choice.'},
+ {n:'Cyan', h:'#0891B2', kw:['cyan','aqua'], mood:['fresh','modern','energetic'], ind:['tech','travel','sport'], note:'Bright and technical; great for data products, gradients, and anything that should feel fast.'},
+ {n:'Sky', h:'#0284C7', kw:['sky','light blue','ocean','sea'], mood:['open','calm','friendly','trustworthy'], ind:['travel','social','saas'], note:'Approachable blue \u2014 trust without the corporate weight of navy.'},
+ {n:'Blue', h:'#2563EB', kw:['blue'], mood:['trustworthy','professional','calm','reliable'], ind:['fintech','saas','corporate','bank','insurance'], note:'The default of digital trust \u2014 excellent contrast behavior across the whole ramp.'},
+ {n:'Indigo', h:'#4F46E5', kw:['indigo','navy'], mood:['trustworthy','premium','modern','deep'], ind:['fintech','saas','ai','bank'], note:'Blue with violet depth \u2014 the contemporary fintech/AI favorite; darks feel expensive.'},
+ {n:'Violet', h:'#7C3AED', kw:['violet','purple','lavender'], mood:['creative','premium','imaginative','playful'], ind:['ai','beauty','creative','gaming'], note:'Imagination\u2019s hue \u2014 creative-tool energy; light stops make dreamy backgrounds.'},
+ {n:'Purple', h:'#9333EA', kw:['purple','plum'], mood:['luxurious','creative','bold'], ind:['beauty','gaming','fashion'], note:'Richer and louder than violet \u2014 use when the brand itself is the show.'},
+ {n:'Magenta', h:'#C026D3', kw:['magenta','fuchsia'], mood:['bold','playful','energetic','creative'], ind:['fashion','music','gaming'], note:'Maximum electricity \u2014 wonderful as an accent system, demanding as a full UI.'},
+ {n:'Pink', h:'#DB2777', kw:['pink'], mood:['playful','warm','friendly','bold'], ind:['beauty','fashion','kids','social'], note:'Confident pink whose 600\u2013700 stops hold white text \u2014 rarer than you\u2019d think in this hue.'},
+ {n:'Rose', h:'#E11D48', kw:['rose','coral','salmon'], mood:['warm','passionate','friendly','bold'], ind:['fashion','food','dating','beauty'], note:'Tinta\u2019s own launch hue \u2014 warm red-pink that stays sophisticated at the dark end.'},
+ {n:'Brown', h:'#92610C', kw:['brown','coffee','chocolate','caramel'], mood:['warm','organic','reliable','cozy'], ind:['food','coffee','craft','interior'], note:'Coffee-toned and grounding; light stops make beautiful cream surfaces.'},
+ {n:'Burgundy', h:'#9F1239', kw:['burgundy','wine','maroon'], mood:['luxurious','serious','warm','premium'], ind:['fashion','wine','law','finance'], note:'Old-money depth \u2014 luxury without shouting; superb dark-mode anchor.'},
+ {n:'Charcoal', h:'#374151', kw:['charcoal','black','dark','ink'], mood:['serious','minimal','premium','modern'], ind:['fashion','portfolio','law'], note:'Near-black base anchored at 500 \u2014 pick a lighter base stop (300\u2013400) if you need lively mids.'}
+];
+const MOOD_SYN = {calm:['calm','calming','peaceful','serene','relax','relaxing','soothing','tranquil','meditation','zen'], trustworthy:['trust','trustworthy','secure','reliable','safe','dependable','credible'], professional:['professional','corporate','business','serious','formal'], playful:['playful','fun','cheerful','joyful','happy','friendly','kids','children','child'], luxurious:['luxury','luxurious','premium','elegant','sophisticated','expensive','high-end','exclusive'], energetic:['energetic','energy','vibrant','exciting','dynamic','bold','loud','sporty'], warm:['warm','cozy','inviting','comfort','comforting'], fresh:['fresh','clean','crisp'], natural:['natural','organic','earthy','eco','sustainable','nature'], minimal:['minimal','minimalist','simple','quiet','subtle','muted'], modern:['modern','contemporary','sleek','tech','futuristic'], creative:['creative','artistic','imaginative','expressive'], optimistic:['optimistic','positive','uplifting','sunny','bright'], healthy:['health','healthy','wellness','fitness','medical']};
+const IND_SYN = {fintech:['fintech','finance','financial','bank','banking','payment','invest','crypto','insurance'], saas:['saas','software','app','startup','product','dashboard','b2b'], health:['health','healthcare','medical','clinic','wellness','fitness','meditation','yoga'], food:['food','restaurant','cafe','coffee','bakery','kitchen','recipe','culinary'], fashion:['fashion','apparel','clothing','boutique','beauty','cosmetic','makeup','skincare'], kids:['kids','children','child','toy','school','education'], travel:['travel','tourism','hotel','airline','trip'], gaming:['gaming','game','esport'], ai:['ai','artificial','machine learning','ml'], eco:['eco','green','sustainab','environment'], craft:['craft','handmade','artisan','pottery'], interior:['interior','furniture','home','architecture'], portfolio:['portfolio','personal','resume','cv'], law:['law','legal','attorney'], creative:['agency','studio','design','creative'], sport:['sport','sports','athletic','gym'], social:['social','community','dating'], outdoor:['outdoor','hiking','camping','adventure'], music:['music','audio','festival'], wine:['wine','whiskey','bar'], corporate:['corporate','enterprise','consulting'], dashboard:['dashboard','analytics','data'], tech:['tech','technology','developer','engineering'], startup:['startup'], travel2:[]};
+const CSS_HUES = {crimson:348, scarlet:8, vermilion:18, tangerine:28, apricot:32, peach:30, salmon:6, coral:16, maroon:340, ruby:337, cherry:350, tomato:9, papaya:35, mango:40, lemon:54, banana:52, chartreuse:90, lime:90, mint:150, seafoam:160, sage:110, forest:130, pine:160, grass:100, kelly:125, turquoise:174, aquamarine:160, cerulean:200, azure:210, cobalt:215, sapphire:220, denim:213, periwinkle:235, lilac:283, mauve:305, orchid:302, plum:307, eggplant:290, grape:270, raspberry:330, bubblegum:335, blush:350, ivory:48, cream:45, sand:40, tan:34, camel:33, bronze:30, copper:22, rust:15, ochre:38, sepia:30, mahogany:15, espresso:25, sky:203, ocean:205, sea:190, midnight:230, storm:215, steel:210, silver:210, lavender:275, hotpink:330, cornflower:219, khaki:54, gold:46, teal:180, cyan:190, magenta:300, fuchsia:295, indigo:245, violet:270};
+
+/* Layer 3 — computed candidates: derive a base at a hue and verify its ramp
+   with the real engine (white-text check at base, sane saturation). */
+function computeBase(hue, prefer){
+  const cands = [];
+  [[72,48],[62,52],[82,44],[55,58],[70,40]].forEach(([s,l])=>{
+    const hex = rgbToHex(hslToRgb({h:hue, s, l}));
+    const cw = contrastRatio(hex, '#FFFFFF');
+    let score = 0;
+    if(cw >= 4.5) score += 3; else if(cw >= 3) score += 1;
+    if(s >= 55 && s <= 85) score += 1;
+    if(prefer === 'muted' && s <= 62) score += 2;
+    if(prefer === 'vivid' && s >= 70) score += 2;
+    cands.push({hex, score, cw});
+  });
+  cands.sort((a,b)=>b.score-a.score);
+  return cands[0];
+}
+
+function assistantAnswer(q){
+  const raw = q.toLowerCase();
+  const hexm = raw.match(/#?([0-9a-f]{6})\b/);
+  /* whole-word matching so 'recommend' can never trigger 'eco', etc. */
+  const hasWord = (w)=>new RegExp('(^|[^a-z])' + w.replace(/[-\/\\^$*+?.()|[\]{}]/g,'\\$&') + '([^a-z]|$)').test(raw);
+  const hits = new Map();
+  const bump = (fam, pts)=>hits.set(fam, (hits.get(fam)||0) + pts);
+  const moods = [], inds = [];
+  let hueHit = false;
+  Object.entries(MOOD_SYN).forEach(([tag, words])=>{ if(words.some(hasWord)) moods.push(tag); });
+  Object.entries(IND_SYN).forEach(([tag, words])=>{ if(words.some(hasWord)) inds.push(tag); });
+  FAMILIES.forEach(f=>{
+    f.kw.forEach(k=>{ if(hasWord(k)){ bump(f, k.length > 4 ? 4 : 3); hueHit = true; } });
+    f.mood.forEach(m=>{ if(moods.includes(m)) bump(f, 2); });
+    f.ind.forEach(i=>{ if(inds.includes(i)) bump(f, 2); });
+  });
+
+  /* pasted hex \u2192 analyze it */
+  if(hexm){
+    const hex = ('#'+hexm[1]).toUpperCase();
+    const cw = contrastRatio(hex, '#FFFFFF');
+    const ok = cw >= 4.5;
+    return { intro: `Analysis of ${hex}: white text on it measures ${cw.toFixed(2)}:1 \u2014 ${ok ? 'it passes AA for buttons and makes a solid base stop.' : 'below the 4.5:1 AA bar for button text, so as a base it will need dark labels (or anchor it at a lighter stop like 400).'}`,
+      recs: [{n:'Your color', hex, why: ok ? 'Ready to use as-is \u2014 the ramp below is generated from your exact hex.' : 'Usable, but consider it as stop 400 with a deeper 500\u2013600 generated around it, or try the assistant\u2019s nearest verified family.'}] };
+  }
+
+  let ranked = [...hits.entries()].sort((a,b)=>b[1]-a[1]).map(([f])=>f);
+
+  /* Layer 3 fallback: unknown color word \u2192 hue dictionary \u2192 computed base */
+  if(!ranked.length || !hueHit){
+    const word = Object.keys(CSS_HUES).find(hasWord);
+    if(word && (!ranked.length || word !== undefined)){
+      const prefer = moods.includes('minimal')||moods.includes('calm') ? 'muted' : (moods.includes('energetic')||moods.includes('playful') ? 'vivid' : '');
+      const c = computeBase(CSS_HUES[word], prefer);
+      return { intro: `\u201C${word[0].toUpperCase()+word.slice(1)}\u201D isn\u2019t in my curated set, so I computed a base at its hue and verified the ramp with the generator (white-text contrast ${c.cw.toFixed(1)}:1 at the base).`,
+        recs: [{n: word[0].toUpperCase()+word.slice(1), hex: c.hex, why: `Computed at hue ${CSS_HUES[word]}\u00B0 and scored for button-ready contrast and balanced saturation${prefer?` with a ${prefer} bias to match your brief`:''}.`}] };
+    }
+    if(ranked.length){ /* mood matched but no hue word anywhere: use ranked below */ }
+    else /* graceful floor */
+    return { intro: 'I couldn\u2019t confidently read a color or mood from that \u2014 here are three broadly dependable bases while you rephrase (try naming a hue, a feeling, or an industry).',
+      recs: [FAMILIES[0], FAMILIES[14], FAMILIES[11]].map(f=>({n:f.n, hex:f.h, why:f.note})) };
+  }
+
+  const top = ranked.slice(0,3).map(f=>({n:f.n, hex:f.h, why:f.note}));
+  const moodTxt = moods.length ? ` for something ${moods.slice(0,2).join(', ')}` : '';
+  const indTxt = inds.length ? ` in ${inds[0]}` : '';
+  return { intro: `Here\u2019s what I\u2019d reach for${moodTxt}${indTxt} \u2014 each base is pre-verified to generate a clean 12-stop ramp:`, recs: top };
+}
+
+function renderAssistant(ans){
+  const box = document.getElementById('ai-results');
+  const stripFor = hex => {
+    const swx = generateSwatches({value:hex, stop:500, hueShift:0, satShift:0, lMin:0, lMax:100, mode:'perceived'});
+    return swx.map(s=>`<div style="background:${s.hex}"></div>`).join('');
+  };
+  box.innerHTML = `<p class="ai-intro">${ans.intro}</p>` + ans.recs.map(r=>`
+    <div class="ai-rec">
+      <div class="ai-rec-head">
+        <span class="ai-dot" style="background:${r.hex}"></span>
+        <b>${r.n}</b> <span class="mono">${r.hex}</span>
+        <button class="ai-use" data-hex="${r.hex}" data-name="${r.n.toLowerCase().replace(/[^a-z0-9-]/g,'')}">Use this \u2192</button>
+      </div>
+      <div class="ai-strip">${stripFor(r.hex)}</div>
+      <p class="ai-why">${r.why}</p>
+    </div>`).join('');
+  box.querySelectorAll('.ai-use').forEach(b=>b.addEventListener('click', ()=>{
+    const p = P();
+    p.value = b.dataset.hex;
+    if(b.dataset.name && b.dataset.name !== 'yourcolor') p.name = b.dataset.name;
+    track('assistant-use');
+    syncControls(); render();
+    b.textContent = 'Applied \u2713';
+    setTimeout(()=>{ b.textContent = 'Use this \u2192'; }, 1400);
+  }));
+}
+
+function runAssistant(){
+  const q = document.getElementById('ai-q').value.trim();
+  if(!q) return;
+  track('assistant-ask');
+  renderAssistant(assistantAnswer(q));
+}
+document.getElementById('ai-ask').addEventListener('click', runAssistant);
+document.getElementById('ai-q').addEventListener('keydown', e=>{ if(e.key==='Enter') runAssistant(); });
+document.querySelectorAll('.ai-chip').forEach(c=>c.addEventListener('click', ()=>{
+  document.getElementById('ai-q').value = c.textContent.replace(' \u00B7 ', ' ');
+  runAssistant();
+}));
+
 /* ============================ init ============================ */
 syncControls();
 syncCheckerInputs();
 render();
 </script>
 
-<!-- ============================ analytics (optional) ============================
-  Free, cookie-less visitor analytics + the custom events wired above
-  (copy-export, download-svg, shuffle, add-palette).
-  To enable: 1) create a free site at https://www.goatcounter.com
-             2) replace YOURCODE below with your site code
-             3) remove the surrounding comment markers.
-
-<script data-goatcounter="https://YOURCODE.goatcounter.com/count"
+<!-- analytics: GoatCounter (cookie-less). Dashboard: https://julianauiuxnotes.goatcounter.com -->
+<script data-goatcounter="https://julianauiuxnotes.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
--->
 </body>
 </html>
