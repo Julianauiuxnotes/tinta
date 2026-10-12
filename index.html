@@ -77,11 +77,12 @@
     margin-bottom: -16px; box-shadow: 0 1px 3px rgba(0,0,0,.04);
     position: relative; isolation: isolate; --i: 0; }
   /* one highlight that slides between tabs instead of each tab repainting */
-  .m-tabs::before { content: ''; position: absolute; z-index: -1; top: 4px; bottom: 4px; left: 4px;
+  /* the pill is a real element so its "liquid" stretch can be animated (see JS) */
+  .m-pill { position: absolute; z-index: -1; top: 4px; bottom: 4px; left: 4px;
     width: calc((100% - 16px) / 3); border-radius: 10px; background: var(--accent);
     box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 35%, transparent);
-    transform: translateX(calc(var(--i) * (100% + 4px)));
-    transition: transform .38s cubic-bezier(.22, 1, .36, 1), background-color .3s ease; }
+    transform: translateX(calc(var(--i) * (100% + 4px))); transform-origin: center;
+    transition: background-color .3s ease; pointer-events: none; }
   .m-tab { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 4px;
     border-radius: 10px; font-size: 12.5px; font-weight: 700; color: #6f726c; white-space: nowrap; min-width: 0;
     background: transparent; transition: color .25s ease; }
@@ -93,7 +94,7 @@
   .grid-main > .col > section.m-tab-panel { animation: mtabIn .32s cubic-bezier(.22, 1, .36, 1) both; }
   @keyframes mtabIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
   @media (prefers-reduced-motion: reduce) {
-    .m-tabs::before, .m-tab { transition: none; }
+    .m-pill, .m-tab { transition: none; }
     .grid-main > .col > section.m-tab-panel { animation: none; }
   }
   .grid-main[data-mtab="setting"] .m-tab-panel:not(#ctl-card),
@@ -2152,10 +2153,35 @@ function renderImagePanel(){
 })();
 
 /* ============================ mobile tool tabs ============================ */
-/* Tool tabs: one of Color setting / Assistant / From image shows at a time. */
+/* Tool tabs: one of Color setting / Assistant / From image shows at a time.
+   The highlight moves like a drop of liquid: its leading edge reaches for the
+   new tab while the tail stays put, then the tail snaps over and the pill
+   settles with a small jelly wobble. */
+const mPill = document.createElement('span');
+mPill.className = 'm-pill';
+mPill.setAttribute('aria-hidden', 'true');
+document.querySelector('.m-tabs').prepend(mPill);
+let mTabIndex = 0;
+function liquidMove(from, to){
+  if(from === to || !mPill.animate) return;
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const W = mPill.offsetWidth, S = W + 4;            /* pill width and one-tab step */
+  const dir = to > from ? 1 : -1, span = Math.abs(to - from) * S;
+  const x0 = from * S, x1 = to * S;
+  const xLeft = Math.min(x0, x1);                      /* while stretched, the pill starts at the leftmost of the two */
+  mPill.animate([
+    { transform: `translateX(${x0}px)`, width: W + 'px', borderRadius: '10px' },
+    { transform: `translateX(${xLeft}px) scaleY(.86)`, width: (W + span) + 'px', borderRadius: '14px', offset: .42 },
+    { transform: `translateX(${x1 + dir * 5}px) scaleY(1.06)`, width: (W - 6) + 'px', borderRadius: '10px', offset: .72 },
+    { transform: `translateX(${x1 - dir * 2}px) scaleY(.98)`, width: (W + 2) + 'px', offset: .88 },
+    { transform: `translateX(${x1}px)`, width: W + 'px', borderRadius: '10px' }
+  ], { duration: 560, easing: 'cubic-bezier(.45, 0, .2, 1)' });
+}
 document.querySelectorAll('.m-tab').forEach((t, i, all)=>{
   t.addEventListener('click', ()=>{
     document.querySelector('.grid-main').dataset.mtab = t.dataset.mtab;
+    liquidMove(mTabIndex, i);
+    mTabIndex = i;
     t.parentElement.style.setProperty('--i', i);
     all.forEach(x=>x.setAttribute('aria-selected', String(x === t)));
   });
