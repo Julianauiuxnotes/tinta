@@ -2155,8 +2155,8 @@ function renderImagePanel(){
 /* ============================ mobile tool tabs ============================ */
 /* Tool tabs: one of Color setting / Assistant / From image shows at a time.
    The highlight moves like a drop of liquid: its leading edge reaches for the
-   new tab while the tail stays put, then the tail snaps over and the pill
-   settles with a small jelly wobble. */
+   new tab while the tail stays put, then the tail follows and the pill
+   eases into place. */
 const mPill = document.createElement('span');
 mPill.className = 'm-pill';
 mPill.setAttribute('aria-hidden', 'true');
@@ -2169,13 +2169,13 @@ function liquidMove(from, to){
   const dir = to > from ? 1 : -1, span = Math.abs(to - from) * S;
   const x0 = from * S, x1 = to * S;
   const xLeft = Math.min(x0, x1);                      /* while stretched, the pill starts at the leftmost of the two */
+  /* gentle version: a light thinning while stretched, a ~1px overshoot, no rebound */
   mPill.animate([
-    { transform: `translateX(${x0}px)`, width: W + 'px', borderRadius: '10px' },
-    { transform: `translateX(${xLeft}px) scaleY(.86)`, width: (W + span) + 'px', borderRadius: '14px', offset: .42 },
-    { transform: `translateX(${x1 + dir * 5}px) scaleY(1.06)`, width: (W - 6) + 'px', borderRadius: '10px', offset: .72 },
-    { transform: `translateX(${x1 - dir * 2}px) scaleY(.98)`, width: (W + 2) + 'px', offset: .88 },
-    { transform: `translateX(${x1}px)`, width: W + 'px', borderRadius: '10px' }
-  ], { duration: 560, easing: 'cubic-bezier(.45, 0, .2, 1)' });
+    { transform: `translateX(${x0}px)`, width: W + 'px' },
+    { transform: `translateX(${xLeft}px) scaleY(.96)`, width: (W + span) + 'px', offset: .45 },
+    { transform: `translateX(${x1 + dir * 1.5}px)`, width: (W - 1.5) + 'px', offset: .8 },
+    { transform: `translateX(${x1}px)`, width: W + 'px' }
+  ], { duration: 460, easing: 'cubic-bezier(.4, 0, .2, 1)' });
 }
 document.querySelectorAll('.m-tab').forEach((t, i, all)=>{
   t.addEventListener('click', ()=>{
