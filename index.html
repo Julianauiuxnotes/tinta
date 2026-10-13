@@ -81,8 +81,8 @@
   .m-pill { position: absolute; z-index: -1; top: 4px; bottom: 4px; left: 4px;
     width: calc((100% - 16px) / 3); border-radius: 10px; background: var(--accent);
     box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 35%, transparent);
-    transform: translateX(calc(var(--i) * (100% + 4px))); transform-origin: center;
-    transition: background-color .3s ease; pointer-events: none; }
+    transform: translateX(calc(var(--i) * (100% + 4px)));
+    transition: transform .38s cubic-bezier(.22, 1, .36, 1), background-color .3s ease; pointer-events: none; }
   .m-tab { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 4px;
     border-radius: 10px; font-size: 12.5px; font-weight: 700; color: #6f726c; white-space: nowrap; min-width: 0;
     background: transparent; transition: color .25s ease; }
@@ -684,7 +684,7 @@
   <footer>
     12-stop scales (25–950) anchored to your exact hex · perceptual spacing via the OKLab color space by Björn Ottosson · contrast per WCAG 2.1
     <br><span style="display:inline-block; margin-top:6px;">Tinta. Color palette generator designed by Julianauiuxnotes. © All rights reserved.</span>
-    <br><span style="display:inline-block; margin-top:4px; font-family:'IBM Plex Mono', monospace; font-size:10.5px;" title="Version of this page — if it doesn't match the latest release, refresh">v2026.10.13</span>
+    <br><span style="display:inline-block; margin-top:4px; font-family:'IBM Plex Mono', monospace; font-size:10.5px;" title="Version of this page — if it doesn't match the latest release, refresh">v2026.10.13-2</span>
   </footer>
 </main>
 
@@ -2155,34 +2155,14 @@ function renderImagePanel(){
 
 /* ============================ mobile tool tabs ============================ */
 /* Tool tabs: one of Color setting / Assistant / From image shows at a time.
-   The highlight moves like a drop of liquid: its leading edge reaches for the
-   new tab while the tail stays put, then the tail follows and the pill
-   eases into place. */
+   The highlight pill slides to the selected tab (CSS transition on --i). */
 const mPill = document.createElement('span');
 mPill.className = 'm-pill';
 mPill.setAttribute('aria-hidden', 'true');
 document.querySelector('.m-tabs').prepend(mPill);
-let mTabIndex = 0;
-function liquidMove(from, to){
-  if(from === to || !mPill.animate) return;
-  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const W = mPill.offsetWidth, S = W + 4;            /* pill width and one-tab step */
-  const dir = to > from ? 1 : -1, span = Math.abs(to - from) * S;
-  const x0 = from * S, x1 = to * S;
-  const xLeft = Math.min(x0, x1);                      /* while stretched, the pill starts at the leftmost of the two */
-  /* gentle version: a light thinning while stretched, a ~1px overshoot, no rebound */
-  mPill.animate([
-    { transform: `translateX(${x0}px)`, width: W + 'px' },
-    { transform: `translateX(${xLeft}px) scaleY(.96)`, width: (W + span) + 'px', offset: .45 },
-    { transform: `translateX(${x1 + dir * 1.5}px)`, width: (W - 1.5) + 'px', offset: .8 },
-    { transform: `translateX(${x1}px)`, width: W + 'px' }
-  ], { duration: 460, easing: 'cubic-bezier(.4, 0, .2, 1)' });
-}
 document.querySelectorAll('.m-tab').forEach((t, i, all)=>{
   t.addEventListener('click', ()=>{
     document.querySelector('.grid-main').dataset.mtab = t.dataset.mtab;
-    liquidMove(mTabIndex, i);
-    mTabIndex = i;
     t.parentElement.style.setProperty('--i', i);
     all.forEach(x=>x.setAttribute('aria-selected', String(x === t)));
   });
